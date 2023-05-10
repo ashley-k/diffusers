@@ -93,6 +93,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         requires_safety_checker: bool = True,
     ):
         super().__init__()
+        print("TEST PRINT: initalizing StableDiffusionPipeline")
 
         if hasattr(scheduler.config, "steps_offset") and scheduler.config.steps_offset != 1:
             deprecation_message = (
