@@ -420,6 +420,7 @@ def get_full_repo_name(model_id: str, organization: Optional[str] = None, token:
 
 
 def main(args):
+    print("TEST PRINT: running train_dreambooth.py")
     logging_dir = Path(args.output_dir, "0", args.logging_dir)
 
     accelerator = Accelerator(
