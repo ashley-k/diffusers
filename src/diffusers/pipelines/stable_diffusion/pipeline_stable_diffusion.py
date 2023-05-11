@@ -35,7 +35,7 @@ from . import StableDiffusionPipelineOutput
 from .safety_checker import StableDiffusionSafetyChecker
 
 # import clip
-from clip import clip
+import clip
 from PIL import Image
 import requests
 
