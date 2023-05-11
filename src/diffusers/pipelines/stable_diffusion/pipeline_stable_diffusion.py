@@ -34,6 +34,8 @@ from ..pipeline_utils import DiffusionPipeline
 from . import StableDiffusionPipelineOutput
 from .safety_checker import StableDiffusionSafetyChecker
 
+import clip
+from PIL import Image
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
@@ -715,3 +717,38 @@ class StableDiffusionPipeline(DiffusionPipeline):
             return (image, has_nsfw_concept)
 
         return StableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept)
+
+class StableDiffusionPipelineNew(DiffusionPipeline):
+    def __init__(
+        self,
+        pipe: StableDiffusionPipeline,
+    ):
+        super().__init__()
+        print("TEST PRINT: initalizing NEW StableDiffusionPipeline")
+
+        model, preprocess = clip.load("ViT-L/14")
+        file_paths = [f"/content/gdrive/MyDrive/CLIPImages/acoelad(1).jpg"]
+
+        images = []
+
+        for ix, filename in enumerate(file_paths):
+            image = Image.open(filename).convert("RGB")
+            images.append(preprocess(image))
+
+        image_input = torch.tensor(np.stack(images)).cuda()
+        image_features = model.encode_image(image_input).float()
+        print("image_input.shape: ", image_input)
+        print("image_features.shape: ", image_features.shape)
+
+
+        # self.register_modules(
+        #     vae=vae,
+        #     text_encoder=text_encoder,
+        #     tokenizer=tokenizer,
+        #     unet=unet,
+        #     scheduler=scheduler,
+        #     safety_checker=safety_checker,
+        #     feature_extractor=feature_extractor,
+        # )
+        # self.vae_scale_factor = 2 ** (len(self.vae.config.block_out_channels) - 1)
+        # self.register_to_config(requires_safety_checker=requires_safety_checker)
