@@ -774,6 +774,8 @@ def main(args):
         if args.train_text_encoder:
             text_encoder.train()
         for step, batch in enumerate(train_dataloader):
+            print("batch: ", batch)
+            print()
             with accelerator.accumulate(unet):
                 # Convert images to latent space
                 with torch.no_grad():
