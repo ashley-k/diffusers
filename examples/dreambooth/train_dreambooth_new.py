@@ -776,9 +776,11 @@ def main(args):
         for step, batch in enumerate(train_dataloader):
             print()
             print("batch: ", batch)
-            print("batch[input_ids]: ", batch["input_ids"])
             print("batch[0][0]: ", batch[0][0])
+            print("batch[0][1]: ", batch[0][1])
+            print("text_encoder(batch[0][1])[0]: ", text_encoder(batch[0][1])[0])
             print("batch[pixel_values]", batch["pixel_values"])
+            print("batch[input_ids]: ", batch["input_ids"])             # TypeError: list indices must be integers or slices, not str
             print()
             with accelerator.accumulate(unet):
                 # Convert images to latent space
