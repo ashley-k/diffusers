@@ -35,6 +35,7 @@ from . import StableDiffusionPipelineOutput
 from .safety_checker import StableDiffusionSafetyChecker
 
 # import clip
+from clip import clip
 from PIL import Image
 import requests
 
@@ -721,37 +722,11 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
     def special_call(self, filename):
         print("special call accessed!!")
-        image = Image.open(filename).convert("RGB")
-        print("image: ", image)
+        # image = Image.open(filename).convert("RGB")
+        # print("image: ", image)
 
+        model, preprocess = clip.load("ViT-L/14")
 
+        # TODO NEXT - figure out how to import clip 
 
-
-# ISSUE: don't know how to  export
-# class StableDiffusionPipelineNew(DiffusionPipeline):
-#     def __init__(
-#         self,
-#         pipe: StableDiffusionPipeline,
-#     ):
-#         super().__init__()
-#         print("TEST PRINT: initalizing NEW StableDiffusionPipeline")
-
-#         url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-#         image = Image.open(requests.get(url, stream=True).raw)
-#         print("type of image: ", type(image))
-#         print("image: ", image)
-
-#         # model, preprocess = clip.load("ViT-L/14")
-#         # file_paths = [f"/content/gdrive/MyDrive/CLIPImages/acoelad(1).jpg"]
-
-#         # images = []
-
-#         # for ix, filename in enumerate(file_paths):
-#         #     image = Image.open(filename).convert("RGB")
-#         #     images.append(preprocess(image))
-
-#         # image_input = torch.tensor(np.stack(images)).cuda()
-#         # image_features = model.encode_image(image_input).float()
-#         # print("image_input.shape: ", image_input)
-#         # print("image_features.shape: ", image_features.shape)
 
