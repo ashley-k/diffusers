@@ -34,8 +34,9 @@ from ..pipeline_utils import DiffusionPipeline
 from . import StableDiffusionPipelineOutput
 from .safety_checker import StableDiffusionSafetyChecker
 
-import clip
+# import clip
 from PIL import Image
+import requests
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
@@ -605,7 +606,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
             (nsfw) content, according to the `safety_checker`.
         """
         print("TEST PRINT: calling StableDiffusionPipeline")
-        
+
         # 0. Default height and width to unet
         height = height or self.unet.config.sample_size * self.vae_scale_factor
         width = width or self.unet.config.sample_size * self.vae_scale_factor
@@ -726,19 +727,24 @@ class StableDiffusionPipelineNew(DiffusionPipeline):
         super().__init__()
         print("TEST PRINT: initalizing NEW StableDiffusionPipeline")
 
-        model, preprocess = clip.load("ViT-L/14")
-        file_paths = [f"/content/gdrive/MyDrive/CLIPImages/acoelad(1).jpg"]
+        url = "http://images.cocodataset.org/val2017/000000039769.jpg"
+        image = Image.open(requests.get(url, stream=True).raw)
+        print("type of image: ", type(image))
+        print("image: ", image)
 
-        images = []
+        # model, preprocess = clip.load("ViT-L/14")
+        # file_paths = [f"/content/gdrive/MyDrive/CLIPImages/acoelad(1).jpg"]
 
-        for ix, filename in enumerate(file_paths):
-            image = Image.open(filename).convert("RGB")
-            images.append(preprocess(image))
+        # images = []
 
-        image_input = torch.tensor(np.stack(images)).cuda()
-        image_features = model.encode_image(image_input).float()
-        print("image_input.shape: ", image_input)
-        print("image_features.shape: ", image_features.shape)
+        # for ix, filename in enumerate(file_paths):
+        #     image = Image.open(filename).convert("RGB")
+        #     images.append(preprocess(image))
+
+        # image_input = torch.tensor(np.stack(images)).cuda()
+        # image_features = model.encode_image(image_input).float()
+        # print("image_input.shape: ", image_input)
+        # print("image_features.shape: ", image_features.shape)
 
 
         # self.register_modules(
