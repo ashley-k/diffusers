@@ -719,7 +719,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
         return StableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept)
 
-    def special_call(filename):
+    def special_call(self, filename):
         print("special call accessed!!")
         image = Image.open(filename).convert("RGB")
         print("image: ", image)
