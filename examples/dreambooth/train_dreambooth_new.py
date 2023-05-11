@@ -774,14 +774,14 @@ def main(args):
         if args.train_text_encoder:
             text_encoder.train()
         for step, batch in enumerate(train_dataloader):
-            print()
-            print("batch: ", batch)
-            print("batch[0][0]: ", batch[0][0])
-            print("batch[0][1]: ", batch[0][1])
-            print("text_encoder(batch[0][1])[0]: ", text_encoder(batch[0][1])[0])
-            print("batch[pixel_values]", batch["pixel_values"])
-            print("batch[input_ids]: ", batch["input_ids"])             # TypeError: list indices must be integers or slices, not str
-            print()
+            # print()
+            # print("batch: ", batch)
+            # print("batch[0][0]: ", batch[0][0])                                     # <diffusers.models.vae.DiagonalGaussianDistribution object at 0x7fee62f9c5b0>
+            # print("batch[0][1]: ", batch[0][1])                                     # tokenized text
+            # print("text_encoder(batch[0][1])[0]: ", text_encoder(batch[0][1])[0])   # 
+            # print("batch[pixel_values]", batch["pixel_values"])                     # TypeError: list indices must be integers or slices, not str
+            # print("batch[input_ids]: ", batch["input_ids"])                         # TypeError: list indices must be integers or slices, not str
+            # print()
             with accelerator.accumulate(unet):
                 # Convert images to latent space
                 with torch.no_grad():
