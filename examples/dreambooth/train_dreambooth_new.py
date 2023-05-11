@@ -774,7 +774,11 @@ def main(args):
         if args.train_text_encoder:
             text_encoder.train()
         for step, batch in enumerate(train_dataloader):
+            print()
             print("batch: ", batch)
+            print("batch[input_ids]: ", batch["input_ids"])
+            print("batch[0][0]: ", batch[0][0])
+            print("batch[pixel_values]", batch["pixel_values"])
             print()
             with accelerator.accumulate(unet):
                 # Convert images to latent space
