@@ -719,42 +719,39 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
         return StableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept)
 
-class StableDiffusionPipelineNew(DiffusionPipeline):
-    def __init__(
-        self,
-        pipe: StableDiffusionPipeline,
-    ):
-        super().__init__()
-        print("TEST PRINT: initalizing NEW StableDiffusionPipeline")
-
-        url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-        image = Image.open(requests.get(url, stream=True).raw)
-        print("type of image: ", type(image))
+    def special_call(filename):
+        print("special call accessed!!")
+        image = Image.open(filename).convert("RGB")
         print("image: ", image)
 
-        # model, preprocess = clip.load("ViT-L/14")
-        # file_paths = [f"/content/gdrive/MyDrive/CLIPImages/acoelad(1).jpg"]
-
-        # images = []
-
-        # for ix, filename in enumerate(file_paths):
-        #     image = Image.open(filename).convert("RGB")
-        #     images.append(preprocess(image))
-
-        # image_input = torch.tensor(np.stack(images)).cuda()
-        # image_features = model.encode_image(image_input).float()
-        # print("image_input.shape: ", image_input)
-        # print("image_features.shape: ", image_features.shape)
 
 
-        # self.register_modules(
-        #     vae=vae,
-        #     text_encoder=text_encoder,
-        #     tokenizer=tokenizer,
-        #     unet=unet,
-        #     scheduler=scheduler,
-        #     safety_checker=safety_checker,
-        #     feature_extractor=feature_extractor,
-        # )
-        # self.vae_scale_factor = 2 ** (len(self.vae.config.block_out_channels) - 1)
-        # self.register_to_config(requires_safety_checker=requires_safety_checker)
+
+# ISSUE: don't know how to  export
+# class StableDiffusionPipelineNew(DiffusionPipeline):
+#     def __init__(
+#         self,
+#         pipe: StableDiffusionPipeline,
+#     ):
+#         super().__init__()
+#         print("TEST PRINT: initalizing NEW StableDiffusionPipeline")
+
+#         url = "http://images.cocodataset.org/val2017/000000039769.jpg"
+#         image = Image.open(requests.get(url, stream=True).raw)
+#         print("type of image: ", type(image))
+#         print("image: ", image)
+
+#         # model, preprocess = clip.load("ViT-L/14")
+#         # file_paths = [f"/content/gdrive/MyDrive/CLIPImages/acoelad(1).jpg"]
+
+#         # images = []
+
+#         # for ix, filename in enumerate(file_paths):
+#         #     image = Image.open(filename).convert("RGB")
+#         #     images.append(preprocess(image))
+
+#         # image_input = torch.tensor(np.stack(images)).cuda()
+#         # image_features = model.encode_image(image_input).float()
+#         # print("image_input.shape: ", image_input)
+#         # print("image_features.shape: ", image_features.shape)
+
