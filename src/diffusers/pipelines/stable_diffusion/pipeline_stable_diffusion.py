@@ -34,10 +34,9 @@ from ..pipeline_utils import DiffusionPipeline
 from . import StableDiffusionPipelineOutput
 from .safety_checker import StableDiffusionSafetyChecker
 
-# import clip
 import clip
 from PIL import Image
-import requests
+import numpy as np
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
@@ -722,10 +721,17 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
     def special_call(self, filename):
         print("special call accessed!!")
-        # image = Image.open(filename).convert("RGB")
-        # print("image: ", image)
 
         model, preprocess = clip.load("ViT-L/14")
+        image = Image.open(filename).convert("RGB")
+        print("image: ", image)
+
+        images = [preprocess(image)]
+        image_input = torch.tensor(np.stack(images)).cuda()
+        image_features = model.encode_image(image_input).float()
+        print("image_features shape: ", image_features.shape)
+        print("image_features: ", image_features)
+
 
         # TODO NEXT - figure out how to import clip 
 
