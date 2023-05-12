@@ -640,6 +640,8 @@ class StableDiffusionPipeline(DiffusionPipeline):
             prompt_embeds=prompt_embeds,
             negative_prompt_embeds=negative_prompt_embeds,
         )
+        print("prompt_embeds shape: ", prompt_embeds.shape)
+        print("prompt embeds: ", prompt_embeds)
 
         # 4. Prepare timesteps
         self.scheduler.set_timesteps(num_inference_steps, device=device)
