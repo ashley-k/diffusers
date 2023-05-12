@@ -174,6 +174,9 @@ class StableDiffusionPipeline(DiffusionPipeline):
         self.vae_scale_factor = 2 ** (len(self.vae.config.block_out_channels) - 1)
         self.register_to_config(requires_safety_checker=requires_safety_checker)
 
+        # INIT model
+        self.model, self.preprocess = clip.load("ViT-L/14")
+
     def enable_vae_slicing(self):
         r"""
         Enable sliced VAE decoding.
@@ -351,7 +354,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
                 attention_mask=attention_mask,
             )
             prompt_embeds = prompt_embeds[0]
-            print("first prompt embeds: ", prompt_embeds)
+            print("first prompt embeds: ", prompt_embeds.shape)
 
         prompt_embeds = prompt_embeds.to(dtype=self.text_encoder.dtype, device=device)
 
@@ -419,6 +422,16 @@ class StableDiffusionPipeline(DiffusionPipeline):
             prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
             print("2. prompt_embeds shape: ", prompt_embeds.shape)
 
+        # CONCAT IMAGE 
+        filename = "/content/gdrive/MyDrive/CLIPImages/mounteverest.jpg"
+        image = Image.open(filename).convert("RGB")
+        images = [self.preprocess(image)]
+        image_input = torch.tensor(np.stack(images)).cuda()
+        image_features = self.model.encode_image(image_input).float()
+        print("image_features shape: ", image_features.shape)
+
+        prompt_embeds = torch.cat([prompt_embeds, [image_features]])
+        print("after concat image_features: ", prompt_embeds.shape)
         return prompt_embeds
 
     def run_safety_checker(self, image, device, dtype):
@@ -730,16 +743,11 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
     def special_call(self, filename):
         print("special call accessed!!")
-
-        model, preprocess = clip.load("ViT-L/14")
         image = Image.open(filename).convert("RGB")
-        print("image: ", image)
-
-        images = [preprocess(image)]
+        images = [self.preprocess(image)]
         image_input = torch.tensor(np.stack(images)).cuda()
-        image_features = model.encode_image(image_input).float()
+        image_features = self.model.encode_image(image_input).float()
         print("image_features shape: ", image_features.shape)
-        print("image_features: ", image_features)
 
 
         # TODO NEXT - figure out how to import clip 
