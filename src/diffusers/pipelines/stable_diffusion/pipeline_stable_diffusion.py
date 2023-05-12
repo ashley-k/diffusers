@@ -430,7 +430,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         image_features = self.model.encode_image(image_input).float()
         print("image_features shape: ", image_features.shape)
 
-        prompt_embeds = torch.cat([prompt_embeds, [image_features]])
+        prompt_embeds = torch.cat([prompt_embeds, torch.tensor([image_features])])
         print("after concat image_features: ", prompt_embeds.shape)
         return prompt_embeds
 
