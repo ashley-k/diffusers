@@ -345,11 +345,13 @@ class StableDiffusionPipeline(DiffusionPipeline):
             else:
                 attention_mask = None
 
+            print("text_input_ids shape: ", text_input_ids.shape)
             prompt_embeds = self.text_encoder(
                 text_input_ids.to(device),
                 attention_mask=attention_mask,
             )
             prompt_embeds = prompt_embeds[0]
+            print("first prompt embeds: ", prompt_embeds)
 
         prompt_embeds = prompt_embeds.to(dtype=self.text_encoder.dtype, device=device)
 
@@ -357,6 +359,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         # duplicate text embeddings for each generation per prompt, using mps friendly method
         prompt_embeds = prompt_embeds.repeat(1, num_images_per_prompt, 1)
         prompt_embeds = prompt_embeds.view(bs_embed * num_images_per_prompt, seq_len, -1)
+        print("after duplicating prompt embeds: ", prompt_embeds.shape)
 
         # get unconditional embeddings for classifier free guidance
         if do_classifier_free_guidance and negative_prompt_embeds is None:
@@ -398,6 +401,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
                 attention_mask=attention_mask,
             )
             negative_prompt_embeds = negative_prompt_embeds[0]
+            print("1. negative_ptompt_embeds: ", negative_prompt_embeds.shape)
 
         if do_classifier_free_guidance:
             # duplicate unconditional embeddings for each generation per prompt, using mps friendly method
@@ -407,11 +411,13 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
             negative_prompt_embeds = negative_prompt_embeds.repeat(1, num_images_per_prompt, 1)
             negative_prompt_embeds = negative_prompt_embeds.view(batch_size * num_images_per_prompt, seq_len, -1)
+            print("2. negative_prompt_embeds: ", negative_prompt_embeds.shape)
 
             # For classifier free guidance, we need to do two forward passes.
             # Here we concatenate the unconditional and text embeddings into a single batch
             # to avoid doing two forward passes
             prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
+            print("2. prompt_embeds shape: ", prompt_embeds.shape)
 
         return prompt_embeds
 
@@ -631,6 +637,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         do_classifier_free_guidance = guidance_scale > 1.0
 
         # 3. Encode input prompt
+        print("prompt: ", prompt)
         prompt_embeds = self._encode_prompt(
             prompt,
             device,
@@ -640,8 +647,8 @@ class StableDiffusionPipeline(DiffusionPipeline):
             prompt_embeds=prompt_embeds,
             negative_prompt_embeds=negative_prompt_embeds,
         )
-        print("prompt_embeds shape: ", prompt_embeds.shape)
-        print("prompt embeds: ", prompt_embeds)
+        print("final prompt_embeds shape: ", prompt_embeds.shape)
+        # print("prompt embeds: ", prompt_embeds)
 
         # 4. Prepare timesteps
         self.scheduler.set_timesteps(num_inference_steps, device=device)
