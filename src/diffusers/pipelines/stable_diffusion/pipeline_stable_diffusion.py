@@ -348,6 +348,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
             else:
                 attention_mask = None
 
+            print("text_input_ids: ", text_input_ids)
             print("text_input_ids shape: ", text_input_ids.shape)
             prompt_embeds = self.text_encoder(
                 text_input_ids.to(device),
