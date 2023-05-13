@@ -354,12 +354,12 @@ class StableDiffusionPipeline(DiffusionPipeline):
                 text_input_ids.to(device),
                 attention_mask=attention_mask,
             )
+            prompt_embeds = prompt_embeds[0]
+            print("first prompt embeds: ", prompt_embeds.shape)
             print("prompt_embeds[0][10]: ", prompt_embeds[0][10])
             print("prompt_embeds[0][11]: ", prompt_embeds[0][11])
             print("equal? ", prompt_embeds[0][10] == prompt_embeds[0][11])
             print()
-            prompt_embeds = prompt_embeds[0]
-            print("first prompt embeds: ", prompt_embeds.shape)
 
         prompt_embeds = prompt_embeds.to(dtype=self.text_encoder.dtype, device=device)
 
