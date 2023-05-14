@@ -286,7 +286,7 @@ class DreamBoothDataset(Dataset):
         size=512,
         center_crop=False,
         num_class_images=None,
-        pad_tokens=False,
+        pad_tokens=True,
         hflip=False,
         read_prompts_from_txts=False,
     ):
