@@ -176,7 +176,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
         # INIT model
         self.model, self.preprocess = clip.load("ViT-L/14")
-        self.new_text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14").cuda()
+        # self.new_text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14").cuda()
 
     def enable_vae_slicing(self):
         r"""
@@ -352,9 +352,9 @@ class StableDiffusionPipeline(DiffusionPipeline):
             # print("text_input_ids shape: ", text_input_ids.shape)
             # print("text_input_ids: ", text_input_ids)
             # print("using new text encoder!")
-            prompt_embeds = self.new_text_encoder(
+            prompt_embeds = self.text_encoder(
                 text_input_ids.to(device),
-                # attention_mask=attention_mask,
+                attention_mask=attention_mask,
             )
             prompt_embeds = prompt_embeds[0]
             # print("first prompt embeds: ", prompt_embeds.shape)
@@ -403,14 +403,10 @@ class StableDiffusionPipeline(DiffusionPipeline):
             else:
                 attention_mask = None
 
-            negative_prompt_embeds = self.new_text_encoder(
+            negative_prompt_embeds = self.text_encoder(
                 uncond_input.input_ids.to(device),
-                # attention_mask=attention_mask,
+                attention_mask=attention_mask,
             )
-            # negative_prompt_embeds = self.text_encoder(
-            #     uncond_input.input_ids.to(device),
-            #     attention_mask=attention_mask,
-            # )
             negative_prompt_embeds = negative_prompt_embeds[0]
             # print("1. negative_ptompt_embeds: ", negative_prompt_embeds.shape)
 
