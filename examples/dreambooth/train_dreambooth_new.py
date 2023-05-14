@@ -6,6 +6,7 @@ import json
 import logging
 import math
 import os
+import pickle
 from contextlib import nullcontext
 from pathlib import Path
 from typing import Optional
@@ -546,6 +547,7 @@ def main(args):
         subfolder="vae",
         revision=args.revision,
     )
+    linear = torch.nn.Linear(768 * 2, 768)
     unet = UNet2DConditionModel.from_pretrained(
         args.pretrained_model_name_or_path,
         subfolder="unet",
@@ -722,6 +724,14 @@ def main(args):
     logger.info(f"  Total optimization steps = {args.max_train_steps}")
 
     def save_weights(step):
+        # Save linear model
+        linear_file_path = args.output_dir + "/linear_model"
+        print("file path: ", linear_file_path)
+        with open(linear_file_path, 'wb') as file:  
+            pickle.dump(linear, file)
+            print("successfully dumped!")
+        return # TODO REMOVE
+
         # Create the pipeline using using the trained modules and save it.
         if accelerator.is_main_process:
             if args.train_text_encoder:
@@ -769,6 +779,10 @@ def main(args):
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
             print(f"[*] Weights saved at {save_dir}")
+
+    # TODO REMOVE - save linear model before training
+    save_weights(0)
+    return 
 
     # Only show the progress bar once on each machine.
     progress_bar = tqdm(range(args.max_train_steps), disable=not accelerator.is_local_main_process)
@@ -822,6 +836,9 @@ def main(args):
                 # print("encoder_hidden_states shape: ", encoder_hidden_states.shape)
                 # print("encoder_hidden_states: ", encoder_hidden_states)
                 # print("args.not_cache_latents: ", args.not_cache_latents)
+
+
+
                 # Predict the noise residual
                 model_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
 
