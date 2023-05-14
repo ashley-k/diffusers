@@ -839,7 +839,7 @@ def main(args):
                 # print("args.not_cache_latents: ", args.not_cache_latents)
 
                 # TODO UPDATE
-                ref_image = "/content/gdrive/MyDrive/CLIPImages/mounteverest.jpg"
+                ref_image = "/content/drive/MyDrive/CLIPImages/mounteverest.jpg"
                 image = Image.open(ref_image).convert("RGB")
                 images = [preprocess(image)]
                 image_input = torch.tensor(np.stack(images)).cuda()
