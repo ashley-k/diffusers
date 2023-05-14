@@ -365,11 +365,6 @@ class StableDiffusionPipeline(DiffusionPipeline):
                 text_input_ids.to(device),
                 attention_mask=attention_mask,
             )
-            print("new prompt embeds ", prompt_embeds)
-            print("old prompt embeds: ", old_prompt_embeds)
-            print()
-            print("new encoder: ",self.new_text_encoder)
-            print("old encoder: ", self.text_encoder)
             prompt_embeds = prompt_embeds[0]
             print("first prompt embeds: ", prompt_embeds.shape)
             print()
@@ -681,7 +676,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
             negative_prompt,
             prompt_embeds=prompt_embeds,
             negative_prompt_embeds=negative_prompt_embeds,
-        )
+        )[2:]
         print("final prompt_embeds shape: ", prompt_embeds.shape)
         # print("prompt embeds: ", prompt_embeds)
 
