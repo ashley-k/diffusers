@@ -349,6 +349,7 @@ class DreamBoothDataset(Dataset):
             truncation=True,
             max_length=self.tokenizer.model_max_length,
         ).input_ids
+        print("pad tokens? ", self.pad_tokens)
         print("instance_prompt_ids len: ", len(example["instance_prompt_ids"]))
         print("instance_prompt_ids shape: ", example["instance_prompt_ids"])
 
