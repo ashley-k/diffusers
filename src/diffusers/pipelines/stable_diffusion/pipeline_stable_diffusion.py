@@ -361,7 +361,15 @@ class StableDiffusionPipeline(DiffusionPipeline):
                 text_input_ids.to(device),
                 # attention_mask=attention_mask,
             )
-            print("output of new encoder: ", self.new_text_encoder( text_input_ids.to(device)))
+            old_prompt_embeds = self.text_encoder(
+                text_input_ids.to(device),
+                attention_mask=attention_mask,
+            )
+            print("new prompt embeds ", prompt_embeds)
+            print("old prompt embeds: ", old_prompt_embeds)
+            print()
+            print("new encoder: ",self.new_text_encoder)
+            print("old encoder: ", self.text_encoder)
             prompt_embeds = prompt_embeds[0]
             print("first prompt embeds: ", prompt_embeds.shape)
             print()
