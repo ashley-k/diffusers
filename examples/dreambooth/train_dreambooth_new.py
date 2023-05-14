@@ -349,7 +349,7 @@ class DreamBoothDataset(Dataset):
             truncation=True,
             max_length=self.tokenizer.model_max_length,
         ).input_ids
-        print("instance_prompt_ids shape: ", example["instance_prompt_ids"].shape)
+        print("instance_prompt_ids len: ", len(example["instance_prompt_ids"]))
         print("instance_prompt_ids shape: ", example["instance_prompt_ids"])
 
         if self.with_prior_preservation:
@@ -365,7 +365,7 @@ class DreamBoothDataset(Dataset):
                 max_length=self.tokenizer.model_max_length,
             ).input_ids
 
-            print("class_prompt_ids shape: ", example["class_prompt_ids"].shape)
+            print("class_prompt_ids len: ", len(example["class_prompt_ids"]))
             print("class_prompt_ids shape: ", example["class_prompt_ids"])
 
         return example
