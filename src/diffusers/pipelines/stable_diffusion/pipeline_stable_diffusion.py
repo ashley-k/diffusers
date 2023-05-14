@@ -96,7 +96,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         requires_safety_checker: bool = True,
     ):
         super().__init__()
-        print("TEST PRINT: initalizing StableDiffusionPipeline")
+        # print("TEST PRINT: initalizing StableDiffusionPipeline")
 
         if hasattr(scheduler.config, "steps_offset") and scheduler.config.steps_offset != 1:
             deprecation_message = (
@@ -349,16 +349,16 @@ class StableDiffusionPipeline(DiffusionPipeline):
             else:
                 attention_mask = None
 
-            print("text_input_ids shape: ", text_input_ids.shape)
-            print("text_input_ids: ", text_input_ids)
-            print("using new text encoder!")
+            # print("text_input_ids shape: ", text_input_ids.shape)
+            # print("text_input_ids: ", text_input_ids)
+            # print("using new text encoder!")
             prompt_embeds = self.new_text_encoder(
                 text_input_ids.to(device),
                 # attention_mask=attention_mask,
             )
             prompt_embeds = prompt_embeds[0]
-            print("first prompt embeds: ", prompt_embeds.shape)
-            print()
+            # print("first prompt embeds: ", prompt_embeds.shape)
+            # print()
 
         prompt_embeds = prompt_embeds.to(dtype=self.text_encoder.dtype, device=device)
 
@@ -366,7 +366,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         # duplicate text embeddings for each generation per prompt, using mps friendly method
         prompt_embeds = prompt_embeds.repeat(1, num_images_per_prompt, 1)
         prompt_embeds = prompt_embeds.view(bs_embed * num_images_per_prompt, seq_len, -1)
-        print("after duplicating prompt embeds: ", prompt_embeds.shape)
+        # print("after duplicating prompt embeds: ", prompt_embeds.shape)
 
         # get unconditional embeddings for classifier free guidance
         if do_classifier_free_guidance and negative_prompt_embeds is None:
@@ -412,7 +412,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
             #     attention_mask=attention_mask,
             # )
             negative_prompt_embeds = negative_prompt_embeds[0]
-            print("1. negative_ptompt_embeds: ", negative_prompt_embeds.shape)
+            # print("1. negative_ptompt_embeds: ", negative_prompt_embeds.shape)
 
         if do_classifier_free_guidance:
             # duplicate unconditional embeddings for each generation per prompt, using mps friendly method
@@ -422,13 +422,13 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
             negative_prompt_embeds = negative_prompt_embeds.repeat(1, num_images_per_prompt, 1)
             negative_prompt_embeds = negative_prompt_embeds.view(batch_size * num_images_per_prompt, seq_len, -1)
-            print("2. negative_prompt_embeds: ", negative_prompt_embeds.shape)
+            # print("2. negative_prompt_embeds: ", negative_prompt_embeds.shape)
 
             # For classifier free guidance, we need to do two forward passes.
             # Here we concatenate the unconditional and text embeddings into a single batch
             # to avoid doing two forward passes
             prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
-            print("2. prompt_embeds shape: ", prompt_embeds.shape)
+            # print("2. prompt_embeds shape: ", prompt_embeds.shape)
 
         # CONCAT IMAGE 
         filename = "/content/gdrive/MyDrive/CLIPImages/mounteverest.jpg"
@@ -436,7 +436,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         images = [self.preprocess(image)]
         image_input = torch.tensor(np.stack(images)).cuda()
         image_features = self.model.encode_image(image_input).float()
-        print("image_features shape: ", image_features.shape)
+        # print("image_features shape: ", image_features.shape)
 
         # prompt_embeds = torch.cat([prompt_embeds, image_features[None, :]])
         # print("after concat image_features: ", prompt_embeds.shape)
@@ -632,7 +632,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
             list of `bool`s denoting whether the corresponding generated image likely represents "not-safe-for-work"
             (nsfw) content, according to the `safety_checker`.
         """
-        print("TEST PRINT: calling StableDiffusionPipeline")
+        # print("TEST PRINT: calling StableDiffusionPipeline")
 
         # 0. Default height and width to unet
         height = height or self.unet.config.sample_size * self.vae_scale_factor
@@ -658,7 +658,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         do_classifier_free_guidance = guidance_scale > 1.0
 
         # 3. Encode input prompt
-        print("prompt: ", prompt)
+        # print("prompt: ", prompt)
         prompt_embeds = self._encode_prompt(
             prompt,
             device,
@@ -668,7 +668,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
             prompt_embeds=prompt_embeds,
             negative_prompt_embeds=negative_prompt_embeds,
         )
-        print("final prompt_embeds shape: ", prompt_embeds.shape)
+        # print("final prompt_embeds shape: ", prompt_embeds.shape)
         # print("prompt embeds: ", prompt_embeds)
 
         # 4. Prepare timesteps

@@ -806,10 +806,13 @@ def main(args):
                 with text_enc_context:
                     if not args.not_cache_latents:
                         if args.train_text_encoder:
+                            print("1. ")
                             encoder_hidden_states = text_encoder(batch[0][1])[0]
                         else:
+                            print("2. ")
                             encoder_hidden_states = batch[0][1]
                     else:
+                        print("3. ")
                         encoder_hidden_states = text_encoder(batch["input_ids"])[0]
 
                 # Predict the noise residual
