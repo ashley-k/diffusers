@@ -351,19 +351,10 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
             print("text_input_ids shape: ", text_input_ids.shape)
             print("text_input_ids: ", text_input_ids)
-            # prompt_embeds = self.text_encoder(
-            #     text_input_ids.to(device),
-            #     attention_mask=attention_mask,
-            # )
             print("using new text encoder!")
-            print("new encoder: ", self.new_text_encoder)
             prompt_embeds = self.new_text_encoder(
                 text_input_ids.to(device),
                 # attention_mask=attention_mask,
-            )
-            old_prompt_embeds = self.text_encoder(
-                text_input_ids.to(device),
-                attention_mask=attention_mask,
             )
             prompt_embeds = prompt_embeds[0]
             print("first prompt embeds: ", prompt_embeds.shape)
@@ -676,7 +667,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
             negative_prompt,
             prompt_embeds=prompt_embeds,
             negative_prompt_embeds=negative_prompt_embeds,
-        )[:, 2:, :]
+        )
         print("final prompt_embeds shape: ", prompt_embeds.shape)
         # print("prompt embeds: ", prompt_embeds)
 
@@ -757,16 +748,5 @@ class StableDiffusionPipeline(DiffusionPipeline):
             return (image, has_nsfw_concept)
 
         return StableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept)
-
-    def special_call(self, filename):
-        print("special call accessed!!")
-        image = Image.open(filename).convert("RGB")
-        images = [self.preprocess(image)]
-        image_input = torch.tensor(np.stack(images)).cuda()
-        image_features = self.model.encode_image(image_input).float()
-        print("image_features shape: ", image_features.shape)
-
-
-        # TODO NEXT - figure out how to import clip 
 
 
