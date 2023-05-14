@@ -844,6 +844,7 @@ def main(args):
                 images = [preprocess(image)]
                 image_input = torch.tensor(np.stack(images)).cuda()
                 image_features = vision_model.encode_image(image_input).float().reshape(-1)
+                image_features = torch.tile(image_features, (2,77,1))
 
                 # Linear layer with reference image
                 print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
