@@ -696,13 +696,13 @@ def main(args):
     )
 
     if args.train_text_encoder:
-        unet, text_encoder, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
+        unet, text_encoder, linear, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
             # unet, text_encoder, optimizer, train_dataloader, lr_scheduler
             unet, text_encoder, linear, optimizer, train_dataloader, lr_scheduler
         )
     else:
-        unet, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
-            unet, optimizer, train_dataloader, lr_scheduler
+        unet, linear, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
+            unet, linear, optimizer, train_dataloader, lr_scheduler
         )
 
     # We need to recalculate our total training steps as the size of the training dataloader may have changed.
