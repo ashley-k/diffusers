@@ -7,6 +7,7 @@ import logging
 import math
 import os
 import pickle
+import clip
 from contextlib import nullcontext
 from pathlib import Path
 from typing import Optional
@@ -15,6 +16,7 @@ import torch
 import torch.nn.functional as F
 import torch.utils.checkpoint
 from torch.utils.data import Dataset
+import numpy as np
 
 from accelerate import Accelerator
 from accelerate.logging import get_logger
@@ -548,6 +550,8 @@ def main(args):
         revision=args.revision,
     )
     linear = torch.nn.Linear(768 * 2, 768)
+    vision_model, preprocess = clip.load("ViT-L/14")
+
     unet = UNet2DConditionModel.from_pretrained(
         args.pretrained_model_name_or_path,
         subfolder="unet",
@@ -589,8 +593,9 @@ def main(args):
         optimizer_class = torch.optim.AdamW
 
     params_to_optimize = (
-        itertools.chain(unet.parameters(), text_encoder.parameters()) if args.train_text_encoder else unet.parameters()
-    )
+        # itertools.chain(unet.parameters(), text_encoder.parameters()) if args.train_text_encoder else unet.parameters()
+        itertools.chain(unet.parameters(), text_encoder.parameters(), linear.parameters()) if args.train_text_encoder else itertools.chain(unet.parameters(), linear.parameters())
+)
     optimizer = optimizer_class(
         params_to_optimize,
         lr=args.learning_rate,
@@ -692,7 +697,8 @@ def main(args):
 
     if args.train_text_encoder:
         unet, text_encoder, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
-            unet, text_encoder, optimizer, train_dataloader, lr_scheduler
+            # unet, text_encoder, optimizer, train_dataloader, lr_scheduler
+            unet, text_encoder, linear, optimizer, train_dataloader, lr_scheduler
         )
     else:
         unet, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
@@ -724,14 +730,6 @@ def main(args):
     logger.info(f"  Total optimization steps = {args.max_train_steps}")
 
     def save_weights(step):
-        # Save linear model
-        linear_file_path = args.output_dir + "/linear_model"
-        print("file path: ", linear_file_path)
-        with open(linear_file_path, 'wb') as file:  
-            pickle.dump(linear, file)
-            print("successfully dumped!")
-        return # TODO REMOVE
-
         # Create the pipeline using using the trained modules and save it.
         if accelerator.is_main_process:
             if args.train_text_encoder:
@@ -780,9 +778,11 @@ def main(args):
                     torch.cuda.empty_cache()
             print(f"[*] Weights saved at {save_dir}")
 
-    # TODO REMOVE - save linear model before training
-    save_weights(0)
-    return 
+        # Save linear model
+        linear_file_path = args.output_dir + "/linear_model"
+        with open(linear_file_path, 'wb') as file:  
+            pickle.dump(linear, file)
+            print("dumped linear model at: ", linear_file_path)
 
     # Only show the progress bar once on each machine.
     progress_bar = tqdm(range(args.max_train_steps), disable=not accelerator.is_local_main_process)
@@ -794,6 +794,7 @@ def main(args):
         unet.train()
         if args.train_text_encoder:
             text_encoder.train()
+        linear.train()
         for step, batch in enumerate(train_dataloader):
             # print()
             # print("batch: ", batch)
@@ -837,7 +838,19 @@ def main(args):
                 # print("encoder_hidden_states: ", encoder_hidden_states)
                 # print("args.not_cache_latents: ", args.not_cache_latents)
 
+                # TODO UPDATE
+                ref_image = "/content/gdrive/MyDrive/CLIPImages/mounteverest.jpg"
+                image = Image.open(ref_image).convert("RGB")
+                images = [preprocess(image)]
+                image_input = torch.tensor(np.stack(images)).cuda()
+                image_features = vision_model.encode_image(image_input).float().reshape(-1)
 
+                # Linear layer with reference image
+                print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
+                print("image_features shape: ", image_features.shape)                   # should be 768
+                combined_states = torch.concatenate([encoder_hidden_states, image_features], axis=2)
+                encoder_hidden_states = linear(combined_states)
+                print("combined shape: ", encoder_hidden_states)
 
                 # Predict the noise residual
                 model_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
