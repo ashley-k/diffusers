@@ -349,6 +349,8 @@ class DreamBoothDataset(Dataset):
             truncation=True,
             max_length=self.tokenizer.model_max_length,
         ).input_ids
+        print("instance_prompt_ids shape: ", example["instance_prompt_ids"].shape)
+        print("instance_prompt_ids shape: ", example["instance_prompt_ids"])
 
         if self.with_prior_preservation:
             class_path, class_prompt = self.class_images_path[index % self.num_class_images]
@@ -362,6 +364,9 @@ class DreamBoothDataset(Dataset):
                 truncation=True,
                 max_length=self.tokenizer.model_max_length,
             ).input_ids
+
+            print("class_prompt_ids shape: ", example["class_prompt_ids"].shape)
+            print("class_prompt_ids shape: ", example["class_prompt_ids"])
 
         return example
 
@@ -817,7 +822,8 @@ def main(args):
                         encoder_hidden_states = text_encoder(batch["input_ids"])[0]
 
                 print("encoder_hidden_states shape: ", encoder_hidden_states.shape)
-                print("encoder_hidden_states: ", encoder_hidden_states)
+                # print("encoder_hidden_states: ", encoder_hidden_states)
+                print("args.not_cache_latents: ", args.not_cache_latents)
                 # Predict the noise residual
                 model_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
 
