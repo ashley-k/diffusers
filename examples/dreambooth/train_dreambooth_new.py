@@ -342,6 +342,8 @@ class DreamBoothDataset(Dataset):
         if not instance_image.mode == "RGB":
             instance_image = instance_image.convert("RGB")
 
+        # PAD TOKENS!!
+        self.pad_tokens = True
         example["instance_images"] = self.image_transforms(instance_image)
         example["instance_prompt_ids"] = self.tokenizer(
             instance_prompt,
@@ -349,7 +351,6 @@ class DreamBoothDataset(Dataset):
             truncation=True,
             max_length=self.tokenizer.model_max_length,
         ).input_ids
-        print("pad tokens? ", self.pad_tokens)
         print("instance_prompt_ids len: ", len(example["instance_prompt_ids"]))
         print("instance_prompt_ids shape: ", example["instance_prompt_ids"])
 
