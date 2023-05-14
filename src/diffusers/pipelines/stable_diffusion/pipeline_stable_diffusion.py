@@ -676,7 +676,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
             negative_prompt,
             prompt_embeds=prompt_embeds,
             negative_prompt_embeds=negative_prompt_embeds,
-        )[2:]
+        )[:, 2:, :]
         print("final prompt_embeds shape: ", prompt_embeds.shape)
         # print("prompt embeds: ", prompt_embeds)
 
