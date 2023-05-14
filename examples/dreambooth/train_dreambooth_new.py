@@ -776,7 +776,6 @@ def main(args):
     global_step = 0
     loss_avg = AverageMeter()
     text_enc_context = nullcontext() if args.train_text_encoder else torch.no_grad()
-    print("args.not_cache_latents: ", args.not_cache_latents)
     for epoch in range(args.num_train_epochs):
         unet.train()
         if args.train_text_encoder:
@@ -814,18 +813,15 @@ def main(args):
                 with text_enc_context:
                     if not args.not_cache_latents:
                         if args.train_text_encoder:
-                            print("1. ")
                             encoder_hidden_states = text_encoder(batch[0][1])[0]
                         else:
-                            print("2. ")
                             encoder_hidden_states = batch[0][1]
                     else:
-                        print("3. ")
                         encoder_hidden_states = text_encoder(batch["input_ids"])[0]
 
-                print("encoder_hidden_states shape: ", encoder_hidden_states.shape)
+                # print("encoder_hidden_states shape: ", encoder_hidden_states.shape)
                 # print("encoder_hidden_states: ", encoder_hidden_states)
-                print("args.not_cache_latents: ", args.not_cache_latents)
+                # print("args.not_cache_latents: ", args.not_cache_latents)
                 # Predict the noise residual
                 model_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
 
