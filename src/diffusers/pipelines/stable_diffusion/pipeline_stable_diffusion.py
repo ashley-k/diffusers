@@ -427,11 +427,11 @@ class StableDiffusionPipeline(DiffusionPipeline):
             # print("2. prompt_embeds shape: ", prompt_embeds.shape)
 
         # CONCAT IMAGE 
-        filename = "/content/gdrive/MyDrive/CLIPImages/mounteverest.jpg"
-        image = Image.open(filename).convert("RGB")
-        images = [self.preprocess(image)]
-        image_input = torch.tensor(np.stack(images)).cuda()
-        image_features = self.model.encode_image(image_input).float()
+        # filename = "/content/gdrive/MyDrive/CLIPImages/mounteverest.jpg"
+        # image = Image.open(filename).convert("RGB")
+        # images = [self.preprocess(image)]
+        # image_input = torch.tensor(np.stack(images)).cuda()
+        # image_features = self.model.encode_image(image_input).float()
         # print("image_features shape: ", image_features.shape)
 
         # prompt_embeds = torch.cat([prompt_embeds, image_features[None, :]])
