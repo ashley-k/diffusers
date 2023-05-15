@@ -36,9 +36,6 @@ torch.backends.cudnn.benchmark = True
 
 logger = get_logger(__name__)
 
-# Global variable
-linear = torch.nn.Linear(768 * 2, 768)
-
 def parse_args(input_args=None):
     parser = argparse.ArgumentParser(description="Simple example of a training script.")
     parser.add_argument(
@@ -916,5 +913,8 @@ def main(args):
 
 
 if __name__ == "__main__":
+    # Global variable
+    linear = torch.nn.Linear(768 * 2, 768)
+
     args = parse_args()
     main(args)

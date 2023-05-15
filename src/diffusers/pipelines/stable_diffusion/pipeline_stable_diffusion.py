@@ -561,6 +561,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         callback: Optional[Callable[[int, int, torch.FloatTensor], None]] = None,
         callback_steps: int = 1,
         cross_attention_kwargs: Optional[Dict[str, Any]] = None,
+        ref_img: str=None,
     ):
         r"""
         Function invoked when calling the pipeline for generation.
@@ -670,18 +671,21 @@ class StableDiffusionPipeline(DiffusionPipeline):
         # print("final prompt_embeds shape: ", prompt_embeds.shape)
         # print("prompt embeds: ", prompt_embeds)
 
-        if self.linear == None:
-            print("NO LINEAR MODEL!!")
+        # 3.25 Update reference image -- TODO UPDATE 
+        if ref_img == None:
+            print("NO IMAGE")
         else:
-            # 3.25 Update reference image -- TODO UPDATE 
-            ref_image = "/content/drive/MyDrive/CLIPImages/mounteverest.jpg"
-            image = Image.open(ref_image).convert("RGB")
+            # ref_img = "/content/drive/MyDrive/CLIPImages/mounteverest.jpg"
+            image = Image.open(ref_img).convert("RGB")
             images = [self.preprocess(image)]
             image_input = torch.tensor(np.stack(images)).cuda()
             image_features = self.vision_model.encode_image(image_input).float().reshape(-1)
             image_features = torch.tile(image_features, (2,77,1))
             
-            # 3.5 Linear layer
+        # 3.5 Linear layer
+        if self.linear == None:
+            print("NO LINEAR MODEL!!")
+        else:
             combined_states = torch.concatenate([prompt_embeds, image_features], axis=2)
             prompt_embeds = self.linear(combined_states)
 
