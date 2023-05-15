@@ -353,8 +353,8 @@ class DreamBoothDataset(Dataset):
             truncation=True,
             max_length=self.tokenizer.model_max_length,
         ).input_ids
-        print("instance_prompt_ids len: ", len(example["instance_prompt_ids"]))
-        print("instance_prompt_ids shape: ", example["instance_prompt_ids"])
+        # print("instance_prompt_ids len: ", len(example["instance_prompt_ids"]))
+        # print("instance_prompt_ids shape: ", example["instance_prompt_ids"])
 
         if self.with_prior_preservation:
             class_path, class_prompt = self.class_images_path[index % self.num_class_images]
@@ -369,8 +369,8 @@ class DreamBoothDataset(Dataset):
                 max_length=self.tokenizer.model_max_length,
             ).input_ids
 
-            print("class_prompt_ids len: ", len(example["class_prompt_ids"]))
-            print("class_prompt_ids shape: ", example["class_prompt_ids"])
+            # print("class_prompt_ids len: ", len(example["class_prompt_ids"]))
+            # print("class_prompt_ids shape: ", example["class_prompt_ids"])
 
         return example
 
@@ -619,7 +619,7 @@ def main(args, linear):
     def collate_fn(examples):
         input_ids = [example["instance_prompt_ids"] for example in examples]
         pixel_values = [example["instance_images"] for example in examples]
-        print("len(pixel_values): ", pixel_values)
+        # print("len(pixel_values): ", len(pixel_values))
 
         # Concat class and instance examples for prior preservation.
         # We do this to avoid doing two forward passes.
@@ -629,7 +629,7 @@ def main(args, linear):
 
         pixel_values = torch.stack(pixel_values)
         pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
-        print("pixel_values shape: ", pixel_values.shape)
+        # print("pixel_values shape: ", pixel_values.shape)
 
         input_ids = tokenizer.pad(
             {"input_ids": input_ids},
@@ -813,8 +813,6 @@ def main(args, linear):
                     else:
                         latent_dist = vae.encode(batch["pixel_values"].to(dtype=weight_dtype)).latent_dist
                     latents = latent_dist.sample() * 0.18215
-                print("training pixel_values shape: ", batch["pixel_values"].shape)
-                print("training pixel_values: ", batch["pixel_values"])
 
                 # Sample noise that we'll add to the latents
                 noise = torch.randn_like(latents)
@@ -842,12 +840,16 @@ def main(args, linear):
                 # print("args.not_cache_latents: ", args.not_cache_latents)
 
                 # TODO UPDATE
-                ref_image = "/content/drive/MyDrive/CLIPImages/mounteverest.jpg"
-                image = Image.open(ref_image).convert("RGB")
-                images = [preprocess(image)]
-                image_input = torch.tensor(np.stack(images)).cuda()
-                image_features = vision_model.encode_image(image_input).float().reshape(-1)
-                image_features = torch.tile(image_features, (2,77,1))
+                joint_features = torch.zeros(768)
+                for i in range(5):
+                    ref_image = f"/content/drive/MyDrive/CLIPImages/acoelad({i+1}).jpg"
+                    image = Image.open(ref_image).convert("RGB")
+                    image_arr = [preprocess(image)]
+                    image_input = torch.tensor(np.stack(image_arr)).cuda()
+                    image_features = vision_model.encode_image(image_input).float().reshape(-1)
+                    joint_features += image_features
+                joint_features = joint_features / 5
+                joint_features = torch.tile(images, (2,77,1))
 
                 # Linear layer with reference image
                 # print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
