@@ -853,6 +853,7 @@ def main(args, linear):
                 print("joint_features.shape: ", joint_features.shape)
                 joint_features = torch.tile(joint_features, (2,77,1))
                 print("new joint_features.shape: ", joint_features.shape)
+                print("encoder_hidden_states.shape: ", encoder_hidden_states.shape)
 
                 # Linear layer with reference image
                 # print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
