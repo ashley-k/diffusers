@@ -629,7 +629,7 @@ def main(args, linear):
 
         pixel_values = torch.stack(pixel_values)
         pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
-        print("pixel_values shape: " pixel_values.shape)
+        print("pixel_values shape: ", pixel_values.shape)
 
         input_ids = tokenizer.pad(
             {"input_ids": input_ids},
@@ -814,6 +814,7 @@ def main(args, linear):
                         latent_dist = vae.encode(batch["pixel_values"].to(dtype=weight_dtype)).latent_dist
                     latents = latent_dist.sample() * 0.18215
                 print("training pixel_values shape: ", batch["pixel_values"].shape)
+                print("training pixel_values: ", batch["pixel_values"])
 
                 # Sample noise that we'll add to the latents
                 noise = torch.randn_like(latents)
