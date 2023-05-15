@@ -767,4 +767,5 @@ class StableDiffusionPipeline(DiffusionPipeline):
 
         return StableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept)
 
-
+    def set_linear(self, linear: Linear):
+        self.linear = linear
