@@ -619,6 +619,7 @@ def main(args, linear):
     def collate_fn(examples):
         input_ids = [example["instance_prompt_ids"] for example in examples]
         pixel_values = [example["instance_images"] for example in examples]
+        print("len(pixel_values): ", pixel_values)
 
         # Concat class and instance examples for prior preservation.
         # We do this to avoid doing two forward passes.
@@ -628,6 +629,7 @@ def main(args, linear):
 
         pixel_values = torch.stack(pixel_values)
         pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
+        print("pixel_values shape: " pixel_values.shape)
 
         input_ids = tokenizer.pad(
             {"input_ids": input_ids},
@@ -811,6 +813,7 @@ def main(args, linear):
                     else:
                         latent_dist = vae.encode(batch["pixel_values"].to(dtype=weight_dtype)).latent_dist
                     latents = latent_dist.sample() * 0.18215
+                print("training pixel_values shape: ", batch["pixel_values"].shape)
 
                 # Sample noise that we'll add to the latents
                 noise = torch.randn_like(latents)
