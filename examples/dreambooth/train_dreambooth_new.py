@@ -840,7 +840,7 @@ def main(args, linear):
                 # print("args.not_cache_latents: ", args.not_cache_latents)
 
                 # TODO UPDATE
-                joint_features = torch.zeros(768)
+                joint_features = torch.zeros(768).cuda()
                 for i in range(5):
                     ref_image = f"/content/drive/MyDrive/CLIPImages/acoelad({i+1}).jpg"
                     image = Image.open(ref_image).convert("RGB")
