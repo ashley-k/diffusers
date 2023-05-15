@@ -779,7 +779,7 @@ def main(args, linear):
             print(f"[*] Weights saved at {save_dir}")
 
         # Save linear model
-        linear_file_path = args.output_dir + "/linear_model"
+        linear_file_path = args.output_dir + "/800/linear_model"
         torch.save(linear.state_dict(), linear_file_path)
         # with open(linear_file_path, 'wb') as file:  
         #     pickle.dump(linear, file)
