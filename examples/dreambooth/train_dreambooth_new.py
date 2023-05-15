@@ -847,11 +847,11 @@ def main(args):
                 image_features = torch.tile(image_features, (2,77,1))
 
                 # Linear layer with reference image
-                print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
-                print("image_features shape: ", image_features.shape)                   # should be 768
+                # print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
+                # print("image_features shape: ", image_features.shape)                   # should be 768
                 combined_states = torch.concatenate([encoder_hidden_states, image_features], axis=2)
                 encoder_hidden_states = linear(combined_states)
-                print("combined shape: ", encoder_hidden_states.shape)
+                # print("combined shape: ", encoder_hidden_states.shape)
 
                 # Predict the noise residual
                 model_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
