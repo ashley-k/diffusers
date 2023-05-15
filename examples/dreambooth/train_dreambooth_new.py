@@ -847,9 +847,12 @@ def main(args, linear):
                     image_arr = [preprocess(image)]
                     image_input = torch.tensor(np.stack(image_arr)).cuda()
                     image_features = vision_model.encode_image(image_input).float().reshape(-1)
+                    print("image_features.shape: ", image_features.shape)
                     joint_features += image_features
                 joint_features = joint_features / 5
+                print("joint_features.shape: ", joint_features.shape)
                 joint_features = torch.tile(joint_features, (2,77,1))
+                print("new joint_features.shape: ", joint_features.shape)
 
                 # Linear layer with reference image
                 # print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
