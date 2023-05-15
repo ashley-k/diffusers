@@ -847,18 +847,18 @@ def main(args, linear):
                     image_arr = [preprocess(image)]
                     image_input = torch.tensor(np.stack(image_arr)).cuda()
                     image_features = vision_model.encode_image(image_input).float().reshape(-1)
-                    print("image_features.shape: ", image_features.shape)
+                    # print("image_features.shape: ", image_features.shape)
                     joint_features += image_features
                 joint_features = joint_features / 5
-                print("joint_features.shape: ", joint_features.shape)
+                # print("joint_features.shape: ", joint_features.shape)
                 joint_features = torch.tile(joint_features, (2,77,1))
-                print("new joint_features.shape: ", joint_features.shape)
-                print("encoder_hidden_states.shape: ", encoder_hidden_states.shape)
+                # print("new joint_features.shape: ", joint_features.shape)
+                # print("encoder_hidden_states.shape: ", encoder_hidden_states.shape)
 
                 # Linear layer with reference image
                 # print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
                 # print("image_features shape: ", image_features.shape)                   # should be 768
-                combined_states = torch.concatenate([encoder_hidden_states, image_features], axis=2)
+                combined_states = torch.concatenate([encoder_hidden_states, joint_features], axis=2)
                 encoder_hidden_states = linear(combined_states)
                 # print("combined shape: ", encoder_hidden_states.shape)
 
