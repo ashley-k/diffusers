@@ -778,7 +778,7 @@ def main(args, linear):
 
         # Save linear model
         linear_file_path = args.output_dir + "/linear_model"
-        torch.save(linear, linear_file_path)
+        torch.save(linear.state_dict(), linear_file_path)
         # with open(linear_file_path, 'wb') as file:  
         #     pickle.dump(linear, file)
         #     print("dumped linear model at: ", linear_file_path)
@@ -915,6 +915,7 @@ def main(args, linear):
 
 if __name__ == "__main__":
     # Global variable
+    global linear
     linear = torch.nn.Linear(768 * 2, 768)
 
     args = parse_args()
