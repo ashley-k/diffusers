@@ -36,6 +36,8 @@ torch.backends.cudnn.benchmark = True
 
 logger = get_logger(__name__)
 
+# Global variable
+linear = torch.nn.Linear(768 * 2, 768)
 
 def parse_args(input_args=None):
     parser = argparse.ArgumentParser(description="Simple example of a training script.")
@@ -549,7 +551,6 @@ def main(args):
         subfolder="vae",
         revision=args.revision,
     )
-    linear = torch.nn.Linear(768 * 2, 768)
     vision_model, preprocess = clip.load("ViT-L/14")
 
     unet = UNet2DConditionModel.from_pretrained(
