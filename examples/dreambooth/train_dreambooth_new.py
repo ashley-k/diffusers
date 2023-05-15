@@ -778,9 +778,10 @@ def main(args, linear):
 
         # Save linear model
         linear_file_path = args.output_dir + "/linear_model"
-        with open(linear_file_path, 'wb') as file:  
-            pickle.dump(linear, file)
-            print("dumped linear model at: ", linear_file_path)
+        torch.save(linear, linear_file_path)
+        # with open(linear_file_path, 'wb') as file:  
+        #     pickle.dump(linear, file)
+        #     print("dumped linear model at: ", linear_file_path)
 
     # Only show the progress bar once on each machine.
     progress_bar = tqdm(range(args.max_train_steps), disable=not accelerator.is_local_main_process)
