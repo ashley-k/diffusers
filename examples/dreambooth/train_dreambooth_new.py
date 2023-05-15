@@ -428,7 +428,7 @@ def get_full_repo_name(model_id: str, organization: Optional[str] = None, token:
         return f"{organization}/{model_id}"
 
 
-def main(args):
+def main(args, linear):
     print("TEST PRINT: running train_dreambooth.py")
     logging_dir = Path(args.output_dir, "0", args.logging_dir)
 
@@ -917,4 +917,4 @@ if __name__ == "__main__":
     linear = torch.nn.Linear(768 * 2, 768)
 
     args = parse_args()
-    main(args)
+    main(args, linear)
