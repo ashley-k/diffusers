@@ -849,7 +849,7 @@ def main(args, linear):
                     image_features = vision_model.encode_image(image_input).float().reshape(-1)
                     joint_features += image_features
                 joint_features = joint_features / 5
-                joint_features = torch.tile(images, (2,77,1))
+                joint_features = torch.tile(joint_features, (2,77,1))
 
                 # Linear layer with reference image
                 # print("encoder_hidden_states shape: ", encoder_hidden_states.shape)     # should be [2, 77, 768]
