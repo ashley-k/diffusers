@@ -179,7 +179,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         # INIT model
         self.vision_model, self.preprocess = clip.load("ViT-L/14")
         # self.new_text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14").cuda()
-        self.linear = linear.cuda()
+        self.linear = linear
 
     def enable_vae_slicing(self):
         r"""
@@ -768,4 +768,4 @@ class StableDiffusionPipeline(DiffusionPipeline):
         return StableDiffusionPipelineOutput(images=image, nsfw_content_detected=has_nsfw_concept)
 
     def set_linear(self, linear: Linear):
-        self.linear = linear
+        self.linear = linear.cuda()
