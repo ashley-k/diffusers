@@ -18,6 +18,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 import torch
 from packaging import version
 from transformers import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
+from torch.nn import Linear
 
 from ...configuration_utils import FrozenDict
 from ...models import AutoencoderKL, UNet2DConditionModel
@@ -94,6 +95,7 @@ class StableDiffusionPipeline(DiffusionPipeline):
         safety_checker: StableDiffusionSafetyChecker,
         feature_extractor: CLIPImageProcessor,
         requires_safety_checker: bool = True,
+        linear: Linear=None
     ):
         super().__init__()
         # print("TEST PRINT: initalizing StableDiffusionPipeline")
@@ -175,8 +177,9 @@ class StableDiffusionPipeline(DiffusionPipeline):
         self.register_to_config(requires_safety_checker=requires_safety_checker)
 
         # INIT model
-        self.model, self.preprocess = clip.load("ViT-L/14")
+        self.vision_model, self.preprocess = clip.load("ViT-L/14")
         # self.new_text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14").cuda()
+        self.linear = linear
 
     def enable_vae_slicing(self):
         r"""
@@ -666,6 +669,21 @@ class StableDiffusionPipeline(DiffusionPipeline):
         )
         # print("final prompt_embeds shape: ", prompt_embeds.shape)
         # print("prompt embeds: ", prompt_embeds)
+
+        if self.linear == None:
+            print("NO LINEAR MODEL!!")
+        else:
+            # 3.25 Update reference image -- TODO UPDATE 
+            ref_image = "/content/drive/MyDrive/CLIPImages/mounteverest.jpg"
+            image = Image.open(ref_image).convert("RGB")
+            images = [self.preprocess(image)]
+            image_input = torch.tensor(np.stack(images)).cuda()
+            image_features = self.vision_model.encode_image(image_input).float().reshape(-1)
+            image_features = torch.tile(image_features, (2,77,1))
+            
+            # 3.5 Linear layer
+            combined_states = torch.concatenate([prompt_embeds, image_features], axis=2)
+            prompt_embeds = self.linear(combined_states)
 
         # 4. Prepare timesteps
         self.scheduler.set_timesteps(num_inference_steps, device=device)
