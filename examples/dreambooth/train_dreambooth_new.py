@@ -842,7 +842,7 @@ def main(args, linear):
                 # TODO UPDATE
                 joint_features = torch.zeros(768).cuda()
                 for i in range(5):
-                    ref_image = f"/content/drive/MyDrive/CLIPImages/acoelad({i+1}).jpg"
+                    ref_image = f"/content/drive/MyDrive/CLIPImages/red({i+1}).jpg"
                     image = Image.open(ref_image).convert("RGB")
                     image_arr = [preprocess(image)]
                     image_input = torch.tensor(np.stack(image_arr)).cuda()
